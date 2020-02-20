@@ -7,18 +7,20 @@ from selenium.webdriver import ActionChains
 
 driver = 0
 summonerName = 'API'
+summonerData = {}
 
 def initDriver():
     # get initial html
     driverpath = os.path.realpath(r'drivers/chromedriver')
     chrome_options = Options()  
-    chrome_options.add_argument("--headless")  
+    # chrome_options.add_argument("--headless")  
 
     driver = webdriver.Chrome(driverpath, options=chrome_options)
     driver.get('https://na.op.gg/summoner/userName=' + summonerName)
 
     return driver
 
+# click 'Update Profile'
 def refreshFullProfile():
     # block [1] get last updated time for checking updated click for button
     a = driver.find_elements_by_class_name("LastUpdate")
@@ -34,6 +36,25 @@ def refreshFullProfile():
     # verify that [1] has changed
     print('driver update successful: ', a == 'Last updated: a minute ago')
 
+# click 'Show More Matches'
+def showMoreMatches():
+    # block [2] find number initial elements
+    a = driver.find_elements_by_class_name("GameItemWrap")
+    print(len(a))
+    print(a)
+
+    link = driver.find_element_by_link_text('Show More')
+    link.click()
+
+    # WebDriverWait(driver, 15).until(a != driver.find_elements_by_class_name("LastUpdate")[0].text)
+    WebDriverWait(driver, 10).until(
+        lambda wd: len(a) < len(driver.find_elements_by_class_name("GameItemWrap"))
+    )
+
+    # verify that [2] has changed
+    print('driver update successful: ', len(a) < len(driver.find_elements_by_class_name("GameItemWrap")))
+
 driver = initDriver()
 print(driver.page_source)
-refreshFullProfile()
+# refreshFullProfile()
+showMoreMatches()
