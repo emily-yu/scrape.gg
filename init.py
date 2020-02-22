@@ -5,8 +5,12 @@ from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver import ActionChains
 
+from profile_detail import *
+from match_detail import *
+
 driver = 0
 summonerName = 'API'
+queryMode = 'Total' # 'Ranked Solo', 'Ranked Flex'/'Ranked Flex 5v5'
 summonerData = {}
 
 def initDriver():
