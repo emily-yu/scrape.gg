@@ -58,7 +58,12 @@ def showMoreMatches():
     # verify that [2] has changed
     print('driver update successful: ', len(a) < len(driver.find_elements_by_class_name("GameItemWrap")))
 
+def getMatchDetail():
+    curr = driver.find_elements_by_class_name("GameItemWrap")[0]
+    return match(curr).self_stats()
+    
 driver = initDriver()
 print(driver.page_source)
 # refreshFullProfile()
-showMoreMatches()
+# showMoreMatches()
+print(getMatchDetail())
