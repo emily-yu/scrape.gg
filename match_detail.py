@@ -22,11 +22,11 @@ def match(match):
                 'cs_per_min': 3.2,
                 'pkill' : 0.59,
                 'build': [],
-                'kda': 3.0,
-                'kda_detail': {
-                    'kill': 2,
-                    'death': 0, 
-                    'assist': 1
+                'kda': {
+                    'overall': 3.88,
+                    'kill': 6.8,
+                    'death': 3.8,
+                    'assist': 7.8
                 },
                 'damage': 29393,
                 'wards': {
