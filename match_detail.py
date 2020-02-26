@@ -11,7 +11,7 @@ class match:
 
         return {
             'win': is_win,
-            'queue_type': queue_type,
+            'queue_type': queue_type.strip(),
             'time': '4 days ago',
             'player': {
                 'champion_played': 'ekko',
@@ -117,3 +117,6 @@ class match:
 def class_content(parent, className):
     first_element = parent.find_elements_by_class_name(className)[0]
     return first_element.get_attribute('innerHTML')
+
+def remove_spaces(inp):
+    return "".join(inp.split())

@@ -5,8 +5,10 @@ from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver import ActionChains
 
-from profile_detail import *
-from match_detail import *
+from profile_detail import profile
+from match_detail import match
+
+import json # for testing
 
 driver = 0
 summonerName = 'API'
@@ -60,10 +62,15 @@ def showMoreMatches():
 
 def getMatchDetail():
     curr = driver.find_elements_by_class_name("GameItemWrap")[0]
-    return match(curr).self_stats()
+    return match(curr)
     
 driver = initDriver()
 print(driver.page_source)
 # refreshFullProfile()
 # showMoreMatches()
-print(getMatchDetail())
+
+test = getMatchDetail()
+# print(test.self_stats())
+print(json.dumps(test.self_stats(), indent=2))
+
+driver.quit()
