@@ -3,18 +3,27 @@ class match:
     def __init__(self, match):
         self.match = match
         self.gamestats = match.find_elements_by_class_name("GameStats")[0]
+        self.gamesetting = match.find_elements_by_class_name("GameSettingInfo")[0]
     
     # stats before clicking downarrow
     def self_stats(self):
+        # game stats information block
         queue_type = class_content(self.gamestats, "GameType")
         is_win = class_content(self.gamestats, "GameResult") == 'Victory'
+        game_length = class_content(self.gamestats, "GameLength")
+        game_time = class_content_search(self.gamestats, ["TimeStamp", "_timeago"])
+
+        # game setting information block
+        champion_played_wrapper = self.gamesetting.find_elements_by_class_name("ChampionName")[0]
+        champion_played = a_textcontent(champion_played_wrapper)
 
         return {
             'win': is_win,
             'queue_type': queue_type.strip(),
-            'time': '4 days ago',
+            'time': game_time,
+            'length': game_length,
             'player': {
-                'champion_played': 'ekko',
+                'champion_played': champion_played,
             },
             'gameplay': {
                 'level': 14,
@@ -117,6 +126,17 @@ class match:
 def class_content(parent, className):
     first_element = parent.find_elements_by_class_name(className)[0]
     return first_element.get_attribute('innerHTML')
+def a_textcontent(parent):
+    first_element = parent.find_elements_by_tag_name('a')[0]
+    return first_element.get_attribute('innerHTML')
+
+# classList is [firstClassToFind, secondClassToFind, etc.]
+def class_content_search(parent, classList):
+    head = parent
+    while classList:
+        head = head.find_elements_by_class_name(classList[0])[0]
+        classList.pop(0)
+    return head.get_attribute('innerHTML')
 
 def remove_spaces(inp):
     return "".join(inp.split())
