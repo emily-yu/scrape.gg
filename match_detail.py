@@ -4,6 +4,8 @@ class match:
         self.match = match
         self.gamestats = match.find_elements_by_class_name("GameStats")[0]
         self.gamesetting = match.find_elements_by_class_name("GameSettingInfo")[0]
+        self.playerstats = match.find_elements_by_class_name("Stats")[0]
+        self.kda = match.find_elements_by_class_name('KDA')[0]
     
     # stats before clicking downarrow
     def self_stats(self):
@@ -16,6 +18,27 @@ class match:
         # game setting information block
         champion_played_wrapper = self.gamesetting.find_elements_by_class_name("ChampionName")[0]
         champion_played = a_textcontent(champion_played_wrapper)
+        # +runes
+
+        # game stats information block
+        level = class_content(self.playerstats, "Level")
+        cs_wrapper = class_content_search(self.playerstats, ["CS", "tip"])
+        cs_per_min = cs_wrapper[cs_wrapper.find("(")+1:cs_wrapper.find(")")]
+        cs_raw = cs_wrapper.replace('(' + cs_per_min + ')', '')
+
+        pkill = class_content(self.playerstats, "CKRate")
+
+        mmr_wrapper = self.playerstats.find_elements_by_class_name("MMR")[0]
+        mmr = mmr_wrapper.find_elements_by_tag_name('b')[0].get_attribute('innerHTML')
+
+        # kda stats information block
+        kill_count = class_content_search(self.kda, ["KDA", "Kill"])
+        assist_count = class_content_search(self.kda, ["KDA", "Assist"])
+        death_count = class_content_search(self.kda, ["KDA", "Death"])
+        kda_ratio = class_content_search(self.kda, ["KDARatio", "KDARatio"])
+
+        # +items
+        # +player names
 
         return {
             'win': is_win,
@@ -26,19 +49,18 @@ class match:
                 'champion_played': champion_played,
             },
             'gameplay': {
-                'level': 14,
-                'cs' : 120,
-                'cs_per_min': 3.2,
-                'pkill' : 0.59,
+                'level': level.strip(),
+                'cs' : cs_raw.strip(),
+                'cs_per_min': cs_per_min,
+                'pkill' : pkill.strip(),
                 'build': [],
                 'kda': {
-                    'overall': 3.88,
-                    'kill': 6.8,
-                    'death': 3.8,
-                    'assist': 7.8
+                    'overall': kda_ratio,
+                    'kill': kill_count,
+                    'death': death_count,
+                    'assist': assist_count
                 },
-                'damage': 29393,
-                'tieravg': 'g4'
+                'tieravg': mmr
             }        
         }
 
