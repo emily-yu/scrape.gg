@@ -1,4 +1,9 @@
 # wrapper
+from selenium.common.exceptions import NoSuchElementException
+from selenium.webdriver.support.wait import WebDriverWait
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support import expected_conditions as EC
+
 class match:
     def __init__(self, match):
         self.match = match
@@ -6,6 +11,9 @@ class match:
         self.gamesetting = match.find_elements_by_class_name("GameSettingInfo")[0]
         self.playerstats = match.find_elements_by_class_name("Stats")[0]
         self.kda = match.find_elements_by_class_name('KDA')[0]
+
+        # expanded menu
+        # self.gamedetail = match.find_elements_by_class_name('GameDetailTableWrap')[0]
     
     # stats before clicking downarrow
     def self_stats(self):
@@ -65,6 +73,21 @@ class match:
         }
 
     def player_stats(self, username):
+        # click expand button
+        link = self.match.find_element_by_id('right_match')
+        link.click()
+
+        # wait until detaillayout is expanded
+        WebDriverWait(self.match, 10).until(
+            EC.presence_of_element_located((
+            By.CLASS_NAME, "MatchDetailLayout")))
+
+        # extraction logic
+        print(self.match.find_elements_by_class_name("MatchDetailLayout"))
+
+        # # find username row
+        # url = "//na.op.gg/summoner/userName=" + username
+        # head = self.gamedetail.find_element_by_xpath('//a[@href="' + url + '"]')
         return {
             'username': 'bakanano',
             'win': True,
@@ -162,3 +185,4 @@ def class_content_search(parent, classList):
 
 def remove_spaces(inp):
     return "".join(inp.split())
+    
