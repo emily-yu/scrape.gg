@@ -83,11 +83,14 @@ class match:
             By.CLASS_NAME, "MatchDetailLayout")))
 
         # extraction logic
-        print(self.match.find_elements_by_class_name("MatchDetailLayout"))
+        matchdetail = self.match.find_elements_by_class_name("MatchDetailLayout")[0]
 
         # # find username row
-        # url = "//na.op.gg/summoner/userName=" + username
-        # head = self.gamedetail.find_element_by_xpath('//a[@href="' + url + '"]')
+        url = "//na.op.gg/summoner/userName=" + username
+        head = matchdetail.find_element_by_xpath('//a[@href="' + url + '"]')
+
+        print(head.get_attribute('innerHTML'))
+
         return {
             'username': 'bakanano',
             'win': True,
