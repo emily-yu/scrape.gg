@@ -1,4 +1,5 @@
 # wrapper
+import re
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.common.by import By
@@ -85,39 +86,68 @@ class match:
         # extraction logic
         matchdetail = self.match.find_elements_by_class_name("MatchDetailLayout")[0]
 
-        # # find username row
-        url = "//na.op.gg/summoner/userName=" + username
-        head = matchdetail.find_element_by_xpath('//a[@href="' + url + '"]')
+        # find username row
+        head = matchdetail.find_element(By.PARTIAL_LINK_TEXT, username)
 
-        print(head.get_attribute('innerHTML'))
+        # find row container from username row
+        parent = head.find_element_by_xpath('../..')
+
+        # data from row container
+        champion_played = class_content_search(parent, ["ChampionImage", "Image"])
+        level = class_content_search(parent, ["ChampionImage", "Level"])
+        elo = class_content(parent, "Tier")
+
+        opscore = class_content_search(parent, ["OPScore", "Text"])
+        opscore_rank = class_content_search(parent, ["OPScore", "Badge"])
+
+        kda_ratio = class_content_search(parent, ["KDA", "KDARatio"])
+        kill = class_content_search(parent, ["KDA", "Kill"])
+        assist = class_content_search(parent, ["KDA", "Death"])
+        death = class_content_search(parent, ["KDA", "Assist"])
+        
+        pkill = class_content_search(parent, ["KDA", "CKRate"])
+
+        damage = class_content_search(parent, ["Damage", "ChampionDamage"])
+
+        ward = parent.find_elements_by_class_name("Ward")[0]
+        ward_title = ward.get_attribute('title').split('<br>')
+        control = remove_nonnumerical(ward_title[0])
+        placed = remove_nonnumerical(ward_title[1])
+        destroyed = remove_nonnumerical(ward_title[2])
+
+        cs = class_content_search(parent, ["CS", "CS"])
+        cs_per_min = class_content_search(parent, ["CS", "CSPerMinute"]).replace('/m', '')
+
+        # look in header for game status
+        header_wrapper = parent.find_element_by_xpath('../..').find_elements_by_class_name("Header")[0]
+        is_victory = class_content_search(header_wrapper, ["Row","HeaderCell", "GameResult"])
 
         return {
-            'username': 'bakanano',
-            'win': True,
-            'time': '4 days ago',
+            'username': username,
+            'win': is_victory,
             'player': {
-                'elo': 'g3',
-                'champion_played': 'ekko',
-                'rank': 4, # mvp, 2nd, 3rd (...)
-                'opscore': 3.2,
+                'elo': remove_spaces(elo),
+                'champion_played': champion_played,
+                'rank': opscore_rank, # mvp, 2nd, 3rd (...)
+                'opscore': opscore,
             },
             'gameplay': {
-                'level': 14,
-                'cs' : 120,
-                'cs_per_min': 3.2,
-                'pkill' : 0.59,
+                'level': level,
+                'cs' : cs,
+                'cs_per_min': cs_per_min,
+                'pkill' : pkill,
                 'build': [],
                 'kda': {
-                    'overall': 3.88,
-                    'kill': 6.8,
-                    'death': 3.8,
-                    'assist': 7.8
+                    'overall': kda_ratio,
+                    'kill': kill,
+                    'death': death,
+                    'assist': assist
                 },
-                'damage': 29393,
+                'damage': damage,
                 'wards': {
-                    'control': 0,
-                    'total': 0,
-                    'destroyed': 3
+                    'control': control,
+                    'total': placed,
+                    'destroyed': destroyed
                 }
             }        
         }
@@ -188,4 +218,7 @@ def class_content_search(parent, classList):
 
 def remove_spaces(inp):
     return "".join(inp.split())
+
+def remove_nonnumerical(inp):
+    return re.sub("[^0-9]", "", inp)
     

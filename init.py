@@ -71,6 +71,6 @@ print(driver.page_source)
 
 test = getMatchDetail()
 # print(test.self_stats())
-print(json.dumps(test.player_stats('HuhKami'), indent=2))
+print(json.dumps(test.player_stats('Sevald'), indent=2))
 
 driver.quit()
