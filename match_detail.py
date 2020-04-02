@@ -37,8 +37,11 @@ class match:
 
         pkill = class_content(self.playerstats, "CKRate")
 
-        mmr_wrapper = self.playerstats.find_elements_by_class_name("MMR")[0]
-        mmr = mmr_wrapper.find_elements_by_tag_name('b')[0].get_attribute('innerHTML')
+        try:
+            mmr_wrapper = self.playerstats.find_elements_by_class_name("MMR")[0]
+            mmr = mmr_wrapper.find_elements_by_tag_name('b')[0].get_attribute('innerHTML')
+        except:
+            mmr = 'N/A'
 
         # kda stats information block
         kill_count = class_content_search(self.kda, ["KDA", "Kill"])
@@ -48,6 +51,17 @@ class match:
 
         # +items
         # +player names
+        winner = {}
+        loser = {}
+
+        team_wrapper = self.match.find_elements_by_class_name("FollowPlayers")[0].find_elements_by_class_name("Team")
+        # for summoner in teams:
+        #     username = class_content_search(summoner, ["Summoner", "SummonerName"])
+        #     champion = class_content_search(summoner, ["Summoner", "ChampionImage", "__sprite"])
+        #     if (is_win and True):
+        #         winner.append((username, champion))
+        #     else:
+        #         loser.append((username, champion))
 
         return {
             'win': is_win,
