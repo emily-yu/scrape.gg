@@ -6,12 +6,13 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 
 class match:
-    def __init__(self, match):
+    def __init__(self, match, username):
         self.match = match
         self.gamestats = match.find_elements_by_class_name("GameStats")[0]
         self.gamesetting = match.find_elements_by_class_name("GameSettingInfo")[0]
         self.playerstats = match.find_elements_by_class_name("Stats")[0]
         self.kda = match.find_elements_by_class_name('KDA')[0]
+        self.username = username
 
         # expanded menu
         # self.gamedetail = match.find_elements_by_class_name('GameDetailTableWrap')[0]
@@ -50,26 +51,38 @@ class match:
         kda_ratio = class_content_search(self.kda, ["KDARatio", "KDARatio"])
 
         # +items
-        # +player names
+
+        # player names
         winner = {}
         loser = {}
 
-        team_wrapper = self.match.find_elements_by_class_name("FollowPlayers")[0].find_elements_by_class_name("Team")
-        # for summoner in teams:
-        #     username = class_content_search(summoner, ["Summoner", "SummonerName"])
-        #     champion = class_content_search(summoner, ["Summoner", "ChampionImage", "__sprite"])
-        #     if (is_win and True):
-        #         winner.append((username, champion))
-        #     else:
-        #         loser.append((username, champion))
+        teams = self.match.find_elements_by_class_name("FollowPlayers")[0].find_elements_by_class_name("Team")
+        for team in teams:
+            curr = {}
+            is_self = False
+            self_team = False # check which side player is on
+            for summoner in team.find_elements_by_class_name("Summoner"):
+                username = class_content_search(summoner, ["SummonerName", "Link"])
+                champion = class_content_search(summoner, ["ChampionImage", "__sprite"])
+                curr[username] = champion # all default to loser
+                if (username == self.username):
+                    is_self = True
+
+            # set curr to either winner or loser
+            if (is_self and is_win) or (not is_self and not is_win):
+                winner = curr # own team won, is on right team
+            elif (is_self and not is_win) or (not is_self and is_win):
+                loser = curr
 
         return {
             'win': is_win,
             'queue_type': queue_type.strip(),
             'time': game_time,
             'length': game_length,
-            'player': {
+            'players': {
                 'champion_played': champion_played,
+                'winner': winner,
+                'loser': loser
             },
             'gameplay': {
                 'level': level.strip(),

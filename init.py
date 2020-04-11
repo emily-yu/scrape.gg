@@ -62,7 +62,7 @@ def showMoreMatches():
 
 def getMatchDetail():
     curr = driver.find_elements_by_class_name("GameItemWrap")[0]
-    return match(curr)
+    return match(curr, summonerName)
     
 driver = initDriver()
 print(driver.page_source)
