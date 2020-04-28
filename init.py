@@ -65,12 +65,13 @@ def getMatchDetail():
     return match(curr, summonerName)
     
 driver = initDriver()
-print(driver.page_source)
+# print(driver.page_source)
 # refreshFullProfile()
 # showMoreMatches()
 
 test = getMatchDetail()
-print(json.dumps(test.self_stats(), indent=2))
+# print(json.dumps(test.self_stats(), indent=2))
 # print(json.dumps(test.player_stats('Sevald'), indent=2))
+print(json.dumps(test.overview(), indent=2))
 
 driver.quit()

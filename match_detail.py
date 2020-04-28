@@ -13,10 +13,35 @@ class match:
         self.playerstats = match.find_elements_by_class_name("Stats")[0]
         self.kda = match.find_elements_by_class_name('KDA')[0]
         self.username = username
-
-        # expanded menu
-        # self.gamedetail = match.find_elements_by_class_name('GameDetailTableWrap')[0]
+        self.player_names = {}
     
+    def game_player_names(self, is_win):
+        if (len(self.player_names) > 0): # if already instantiated
+            return self.player_names
+
+        # not set yet
+        teams = self.match.find_elements_by_class_name("FollowPlayers")[0].find_elements_by_class_name("Team")
+        for team in teams:
+            curr = {}
+            is_self = False
+            self_team = False # check which side player is on
+            for summoner in team.find_elements_by_class_name("Summoner"):
+                username = class_content_search(summoner, ["SummonerName", "Link"])
+                champion = class_content_search(summoner, ["ChampionImage", "__sprite"])
+                curr[username] = champion # all default to loser
+                if (username == self.username):
+                    is_self = True
+
+            # set curr to either winner or loser
+            if (is_self and is_win) or (not is_self and not is_win):
+                winner = curr # own team won, is on right team
+            elif (is_self and not is_win) or (not is_self and is_win):
+                loser = curr 
+        return {
+            'winner': winner,
+            'loser': loser
+        }
+                
     # stats before clicking downarrow
     def self_stats(self):
         # game stats information block
@@ -53,26 +78,7 @@ class match:
         # +items
 
         # player names
-        winner = {}
-        loser = {}
-
-        teams = self.match.find_elements_by_class_name("FollowPlayers")[0].find_elements_by_class_name("Team")
-        for team in teams:
-            curr = {}
-            is_self = False
-            self_team = False # check which side player is on
-            for summoner in team.find_elements_by_class_name("Summoner"):
-                username = class_content_search(summoner, ["SummonerName", "Link"])
-                champion = class_content_search(summoner, ["ChampionImage", "__sprite"])
-                curr[username] = champion # all default to loser
-                if (username == self.username):
-                    is_self = True
-
-            # set curr to either winner or loser
-            if (is_self and is_win) or (not is_self and not is_win):
-                winner = curr # own team won, is on right team
-            elif (is_self and not is_win) or (not is_self and is_win):
-                loser = curr
+        teams = self.game_player_names(is_win)
 
         return {
             'win': is_win,
@@ -81,8 +87,8 @@ class match:
             'length': game_length,
             'players': {
                 'champion_played': champion_played,
-                'winner': winner,
-                'loser': loser
+                'winner': teams['winner'],
+                'loser': teams['loser']
             },
             'gameplay': {
                 'level': level.strip(),
@@ -100,7 +106,7 @@ class match:
             }        
         }
 
-    def player_stats(self, username):
+    def click_expansion(self):
         # click expand button
         link = self.match.find_element_by_id('right_match')
         link.click()
@@ -111,7 +117,10 @@ class match:
             By.CLASS_NAME, "MatchDetailLayout")))
 
         # extraction logic
-        matchdetail = self.match.find_elements_by_class_name("MatchDetailLayout")[0]
+        return self.match.find_elements_by_class_name("MatchDetailLayout")[0]
+
+    def player_stats(self, username):
+        matchdetail = self.click_expansion()
 
         # find username row
         head = matchdetail.find_element(By.PARTIAL_LINK_TEXT, username)
@@ -180,24 +189,55 @@ class match:
         }
 
     def overview(self):
-        blue_team = {}
-        red_team = {
-            'players': [],
-            'queue_type': 'rankedsolo',
+        is_win = class_content(self.gamestats, "GameResult") == 'Victory'
+        players = self.game_player_names(is_win)
+
+        matchdetail = self.click_expansion()
+        result = matchdetail.find_elements_by_class_name("GameResult")[0] # victory or loss
+
+        inner_wrapper = result.find_element_by_xpath('..')
+        inner = inner_wrapper.get_attribute('innerHTML')
+        team = find_between(inner, '(', ')') # result of team with player on it - op.gg auto formats like this
+        
+        objectives = matchdetail.find_elements_by_class_name('Summary')[0].find_elements_by_class_name("ObjectScore")
+        
+        # assumes that game is lost
+        red, blue, winner, loser = (0, 0, 0, 0)
+        extract_number = lambda inp: remove_nonnumerical(inp.get_attribute("innerHTML"))
+        loser = {
+            'baron': extract_number(objectives[0]),
+            'dragon': extract_number(objectives[1]),
+            'tower': extract_number(objectives[2]),
+        }
+        winner = {
+            'baron': extract_number(objectives[3]),
+            'dragon': extract_number(objectives[4]),
+            'tower': extract_number(objectives[5]),
+        }
+
+        if (is_win): # if is_win, swap
+            loser, winner = winner, loser
+
+        # assignment to red/blue teams        
+        if (is_win and team == "Red Team") or (not is_win and team != "Red Team"):
+            red = winner
+            blue = loser
+        else:
+            red = loser
+            blue = winner
+            
+        return {
+            'players': players,
+            'player_stats': {
+                'team': team,
+                'result': result.text
+            },
             'objective_count': {
-                'baron': 0,
-                'dragon': 1,
-                'tower': 5
+                'blue': blue,
+                'red': red
             },
             'totalkill': 20,
             'totalgold': 20000
-        }
-
-        # run player_stats() for each player
-        return {
-            'blue': blue_team,
-            'red' : red_team,
-            'tier_avg': 'g5',
         }
 
     # player stats
@@ -249,3 +289,5 @@ def remove_spaces(inp):
 def remove_nonnumerical(inp):
     return re.sub("[^0-9]", "", inp)
     
+def find_between(string, char_start, char_end):
+    return string[string.find(char_start)+1 : string.find(char_end)]
