@@ -232,12 +232,16 @@ class match:
                 'team': team,
                 'result': result.text
             },
-            'objective_count': {
-                'blue': blue,
-                'red': red
+            'blue': {
+                'objectives': blue,
+                'kill': 0,
+                'damage': 0
             },
-            'totalkill': 20,
-            'totalgold': 20000
+            'red': {
+                'objectives': red,
+                'kill': 0,
+                'damage': 0
+            }
         }
 
     # player stats
