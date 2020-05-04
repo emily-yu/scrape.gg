@@ -199,11 +199,13 @@ class match:
         inner = inner_wrapper.get_attribute('innerHTML')
         team = find_between(inner, '(', ')') # result of team with player on it - op.gg auto formats like this
         
-        objectives = matchdetail.find_elements_by_class_name('Summary')[0].find_elements_by_class_name("ObjectScore")
-        
+        summary = matchdetail.find_elements_by_class_name('Summary')[0]
+
+        # objective assignments
         # assumes that game is lost
-        red, blue, winner, loser = (0, 0, 0, 0)
+        winner, loser = (0, 0)
         extract_number = lambda inp: remove_nonnumerical(inp.get_attribute("innerHTML"))
+        objectives = summary.find_elements_by_class_name("ObjectScore")
         loser = {
             'baron': extract_number(objectives[0]),
             'dragon': extract_number(objectives[1]),
@@ -218,30 +220,47 @@ class match:
         if (is_win): # if is_win, swap
             loser, winner = winner, loser
 
+        red = {}
+        blue = {}
+
+        # total kill/gold assignments
+        totals = summary.find_elements_by_class_name("total--container")
+        left = {}
+        right = {}
+        for container in totals:
+            _left = class_content(container, "graph--data__left")
+            _right = class_content(container, "graph--data__right")
+            if class_content(container, "graph--title") == "Total Kill":
+                left['kill'] = _left
+                right['kill'] = _right
+            elif class_content(container, "graph--title") == "Total Gold":
+                left['gold'] = _left
+                right['gold'] = _right
+            else:
+                print("error")
+
         # assignment to red/blue teams        
         if (is_win and team == "Red Team") or (not is_win and team != "Red Team"):
-            red = winner
-            blue = loser
+            # won, red team is player
+            # lost, blue team is enemy
+            red = left
+            red["objectives"] = winner
+            blue = right
+            blue["objectives"] = loser
         else:
-            red = loser
-            blue = winner
-            
+            red = right
+            red["objectives"] = loser
+            blue = left
+            blue["objectives"] = winner
+        
         return {
             'players': players,
             'player_stats': {
                 'team': team,
                 'result': result.text
             },
-            'blue': {
-                'objectives': blue,
-                'kill': 0,
-                'damage': 0
-            },
-            'red': {
-                'objectives': red,
-                'kill': 0,
-                'damage': 0
-            }
+            'blue': blue,
+            'red': red
         }
 
     # player stats
