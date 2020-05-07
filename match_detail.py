@@ -26,8 +26,8 @@ class match:
             is_self = False
             self_team = False # check which side player is on
             for summoner in team.find_elements_by_class_name("Summoner"):
-                username = class_content_search(summoner, ["SummonerName", "Link"])
-                champion = class_content_search(summoner, ["ChampionImage", "__sprite"])
+                username = class_content_search(summoner, ["SummonerName", "Link"], 'innerHTML')
+                champion = class_content_search(summoner, ["ChampionImage", "__sprite"], 'innerHTML')
                 curr[username] = champion # all default to loser
                 if (username == self.username):
                     is_self = True
@@ -48,7 +48,7 @@ class match:
         queue_type = class_content(self.gamestats, "GameType")
         is_win = class_content(self.gamestats, "GameResult") == 'Victory'
         game_length = class_content(self.gamestats, "GameLength")
-        game_time = class_content_search(self.gamestats, ["TimeStamp", "_timeago"])
+        game_time = class_content_search(self.gamestats, ["TimeStamp", "_timeago"], 'innerHTML')
 
         # game setting information block
         champion_played_wrapper = self.gamesetting.find_elements_by_class_name("ChampionName")[0]
@@ -57,7 +57,7 @@ class match:
 
         # game stats information block
         level = class_content(self.playerstats, "Level")
-        cs_wrapper = class_content_search(self.playerstats, ["CS", "tip"])
+        cs_wrapper = class_content_search(self.playerstats, ["CS", "tip"], 'innerHTML')
         cs_per_min = cs_wrapper[cs_wrapper.find("(")+1:cs_wrapper.find(")")]
         cs_raw = cs_wrapper.replace('(' + cs_per_min + ')', '')
 
@@ -70,10 +70,10 @@ class match:
             mmr = 'N/A'
 
         # kda stats information block
-        kill_count = class_content_search(self.kda, ["KDA", "Kill"])
-        assist_count = class_content_search(self.kda, ["KDA", "Assist"])
-        death_count = class_content_search(self.kda, ["KDA", "Death"])
-        kda_ratio = class_content_search(self.kda, ["KDARatio", "KDARatio"])
+        kill_count = class_content_search(self.kda, ["KDA", "Kill"], 'innerHTML')
+        assist_count = class_content_search(self.kda, ["KDA", "Assist"], 'innerHTML')
+        death_count = class_content_search(self.kda, ["KDA", "Death"], 'innerHTML')
+        kda_ratio = class_content_search(self.kda, ["KDARatio", "KDARatio"], 'innerHTML')
 
         # +items
 
@@ -106,21 +106,21 @@ class match:
             }        
         }
 
-    def click_expansion(self):
+    def click_expansion(self, to_click, wait_until_exists):
         # click expand button
-        link = self.match.find_element_by_id('right_match')
+        link = self.match.find_element_by_id(to_click)
         link.click()
 
         # wait until detaillayout is expanded
         WebDriverWait(self.match, 10).until(
             EC.presence_of_element_located((
-            By.CLASS_NAME, "MatchDetailLayout")))
+            By.CLASS_NAME, wait_until_exists)))
 
         # extraction logic
-        return self.match.find_elements_by_class_name("MatchDetailLayout")[0]
+        return self.match.find_elements_by_class_name(wait_until_exists)[0]
 
     def player_stats(self, username):
-        matchdetail = self.click_expansion()
+        matchdetail = self.click_expansion('right_match', "MatchDetailLayout")
 
         # find username row
         head = matchdetail.find_element(By.PARTIAL_LINK_TEXT, username)
@@ -129,21 +129,21 @@ class match:
         parent = head.find_element_by_xpath('../..')
 
         # data from row container
-        champion_played = class_content_search(parent, ["ChampionImage", "Image"])
-        level = class_content_search(parent, ["ChampionImage", "Level"])
+        champion_played = class_content_search(parent, ["ChampionImage", "Image"], 'innerHTML')
+        level = class_content_search(parent, ["ChampionImage", "Level"], 'innerHTML')
         elo = class_content(parent, "Tier")
 
-        opscore = class_content_search(parent, ["OPScore", "Text"])
-        opscore_rank = class_content_search(parent, ["OPScore", "Badge"])
+        opscore = class_content_search(parent, ["OPScore", "Text"], 'innerHTML')
+        opscore_rank = class_content_search(parent, ["OPScore", "Badge"], 'innerHTML')
 
-        kda_ratio = class_content_search(parent, ["KDA", "KDARatio"])
-        kill = class_content_search(parent, ["KDA", "Kill"])
-        assist = class_content_search(parent, ["KDA", "Death"])
-        death = class_content_search(parent, ["KDA", "Assist"])
+        kda_ratio = class_content_search(parent, ["KDA", "KDARatio"], 'innerHTML')
+        kill = class_content_search(parent, ["KDA", "Kill"], 'innerHTML')
+        assist = class_content_search(parent, ["KDA", "Death"], 'innerHTML')
+        death = class_content_search(parent, ["KDA", "Assist"], 'innerHTML')
         
-        pkill = class_content_search(parent, ["KDA", "CKRate"])
+        pkill = class_content_search(parent, ["KDA", "CKRate"], 'innerHTML')
 
-        damage = class_content_search(parent, ["Damage", "ChampionDamage"])
+        damage = class_content_search(parent, ["Damage", "ChampionDamage"], 'innerHTML')
 
         ward = parent.find_elements_by_class_name("Ward")[0]
         ward_title = ward.get_attribute('title').split('<br>')
@@ -151,12 +151,12 @@ class match:
         placed = remove_nonnumerical(ward_title[1])
         destroyed = remove_nonnumerical(ward_title[2])
 
-        cs = class_content_search(parent, ["CS", "CS"])
-        cs_per_min = class_content_search(parent, ["CS", "CSPerMinute"]).replace('/m', '')
+        cs = class_content_search(parent, ["CS", "CS"], 'innerHTML')
+        cs_per_min = class_content_search(parent, ["CS", "CSPerMinute"], 'innerHTML').replace('/m', '')
 
         # look in header for game status
         header_wrapper = parent.find_element_by_xpath('../..').find_elements_by_class_name("Header")[0]
-        is_victory = class_content_search(header_wrapper, ["Row","HeaderCell", "GameResult"])
+        is_victory = class_content_search(header_wrapper, ["Row","HeaderCell", "GameResult"], 'innerHTML')
 
         return {
             'username': username,
@@ -192,7 +192,7 @@ class match:
         is_win = class_content(self.gamestats, "GameResult") == 'Victory'
         players = self.game_player_names(is_win)
 
-        matchdetail = self.click_expansion()
+        matchdetail = self.click_expansion('right_match', "MatchDetailLayout")
         result = matchdetail.find_elements_by_class_name("GameResult")[0] # victory or loss
 
         inner_wrapper = result.find_element_by_xpath('..')
@@ -266,20 +266,20 @@ class match:
     # player stats
     def build(self):
         item = [
-            ('0 min', ['potion', 'dorans', 'ward']),
-            ('5 min', ['potion', 'dorans', 'ward']),
-            # extract all -min items
+            # ('0 min', ['potion', 'dorans', 'ward']),
+            # ('5 min', ['potion', 'dorans', 'ward']),
+            # # extract all -min items
         ]
         skill = [
-            ('1', 'Q')
-            ('2', 'W')
-            # extract all (order, ability)
-            ('16', 'R')
+            # ('1', 'Q')
+            # ('2', 'W')
+            # # extract all (order, ability)
+            # ('16', 'R')
         ]
         runes = {
-            'sorcery': [],
-            'domination': [],
-            'runestats': []
+            # 'sorcery': [],
+            # 'domination': [],
+            # 'runestats': []
         }
 
         return {
@@ -299,12 +299,14 @@ def a_textcontent(parent):
     return first_element.get_attribute('innerHTML')
 
 # classList is [firstClassToFind, secondClassToFind, etc.]
-def class_content_search(parent, classList):
+def class_content_search(parent, classList, attribute=None):
     head = parent
     while classList:
         head = head.find_elements_by_class_name(classList[0])[0]
         classList.pop(0)
-    return head.get_attribute('innerHTML')
+    if (attribute):
+        return head.get_attribute(attribute)
+    return head
 
 def remove_spaces(inp):
     return "".join(inp.split())
