@@ -265,6 +265,22 @@ class match:
 
     # player stats
     def build(self):
+        # expand matchdetailview, then click builds tab
+        matchdetail = self.click_expansion('right_match', "MatchDetailLayout")
+        matchbuild = self.click_expansion('right_match_build', "MatchBuild")
+
+        itembuild = matchbuild.find_elements_by_class_name("ItemBuild")[0].find_elements_by_class_name("List")
+        for item in itembuild:
+            print(item)
+
+        skillbuild = matchbuild.find_elements_by_class_name("SkillBuild")[0]
+
+        runes = []
+        runebuild = class_content_search(matchbuild, ["RuneBuild", "Content"])
+        for rune in runebuild.find_elements_by_class_name("perk-page__item--active"):
+            base = rune.find_elements_by_class_name("tip")[0]
+            runes.push(base.get_attribute("alt"))
+
         item = [
             # ('0 min', ['potion', 'dorans', 'ward']),
             # ('5 min', ['potion', 'dorans', 'ward']),
