@@ -1,9 +1,13 @@
 # wrapper
 import re
+import os
+
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
+
+from bs4 import BeautifulSoup
 
 class match:
     def __init__(self, match, username):
@@ -269,9 +273,16 @@ class match:
         matchdetail = self.click_expansion('right_match', "MatchDetailLayout")
         matchbuild = self.click_expansion('right_match_build', "MatchBuild")
 
-        itembuild = matchbuild.find_elements_by_class_name("ItemBuild")[0].find_elements_by_class_name("List")
-        for item in itembuild:
-            print(item)
+        items = {}
+        itembuild = class_content_search(matchbuild, ["ItemBuild", "List"])
+        for item in itembuild.find_elements_by_xpath("//ul[@class='List']/li"):
+            time_purchased = class_content(item, "Time")
+            item_list = class_content_search(item, ["Items"])
+            item_block = []
+            for item_purchased in item_list.find_elements_by_class_name("Image"):
+                src = item_purchased.get_attribute("src").rsplit('/', 1)[-1]
+                item_block.append(os.path.splitext(src)[0])
+            items[time_purchased] = item_block
 
         skillbuild = matchbuild.find_elements_by_class_name("SkillBuild")[0]
 
@@ -279,27 +290,17 @@ class match:
         runebuild = class_content_search(matchbuild, ["RuneBuild", "Content"])
         for rune in runebuild.find_elements_by_class_name("perk-page__item--active"):
             base = rune.find_elements_by_class_name("tip")[0]
-            runes.push(base.get_attribute("alt"))
+            runes.append(base.get_attribute("alt"))
 
-        item = [
-            # ('0 min', ['potion', 'dorans', 'ward']),
-            # ('5 min', ['potion', 'dorans', 'ward']),
-            # # extract all -min items
-        ]
         skill = [
             # ('1', 'Q')
             # ('2', 'W')
             # # extract all (order, ability)
             # ('16', 'R')
         ]
-        runes = {
-            # 'sorcery': [],
-            # 'domination': [],
-            # 'runestats': []
-        }
 
         return {
-            'item': item,
+            'item': items,
             'skill': skill,
             'runes': runes
         }
