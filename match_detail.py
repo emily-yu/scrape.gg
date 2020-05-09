@@ -284,7 +284,16 @@ class match:
                 item_block.append(os.path.splitext(src)[0])
             items[time_purchased] = item_block
 
-        skillbuild = matchbuild.find_elements_by_class_name("SkillBuild")[0]
+        skills = {}
+        skillbuild = matchbuild.find_elements_by_class_name("SkillBuildTable")[0]
+        skill_key = ['Q', 'W', 'E', 'R']
+        iteration = 0
+        for skill_action in skillbuild.find_elements_by_class_name("Row"):
+            skill_sequence = []
+            for level in skill_action.find_elements_by_class_name("LevelUP"):
+                skill_sequence.append(remove_spaces(level.get_attribute("innerHTML")))
+            skills[skill_key[iteration]] = skill_sequence
+            iteration += 1
 
         runes = []
         runebuild = class_content_search(matchbuild, ["RuneBuild", "Content"])
@@ -292,16 +301,9 @@ class match:
             base = rune.find_elements_by_class_name("tip")[0]
             runes.append(base.get_attribute("alt"))
 
-        skill = [
-            # ('1', 'Q')
-            # ('2', 'W')
-            # # extract all (order, ability)
-            # ('16', 'R')
-        ]
-
         return {
             'item': items,
-            'skill': skill,
+            'skill': skills,
             'runes': runes
         }
 
