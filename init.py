@@ -69,10 +69,13 @@ driver = initDriver()
 # refreshFullProfile()
 # showMoreMatches()
 
-test = getMatchDetail()
+# test = getMatchDetail()
 # print(json.dumps(test.self_stats(), indent=2))
 # print(json.dumps(test.player_stats('Sevald'), indent=2))
 # print(json.dumps(test.overview(), indent=2))
-print(json.dumps(test.build(), indent=2))
+# print(json.dumps(test.build(), indent=2))
+
+test = profile(driver)
+print(json.dumps(test.queue_stats('Total'), indent=2))
 
 driver.quit()
