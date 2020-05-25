@@ -1,6 +1,7 @@
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support.wait import WebDriverWait
 
 class profile:
     def __init__(self, source):
@@ -34,8 +35,21 @@ class profile:
 
     # bar above match stats
     def queue_stats(self, game_type='Total'): # type: 'Ranked Solo, Ranked Flex
-        # click correct game_type if specified TODO
+        # click correct game_type if specified
+        if game_type != 'Total': 
+            nav = self.source.find_element_by_class_name("Navigation")
+            if (game_type == 'Ranked Solo'):
+                link = nav.find_element_by_id('right_gametype_soloranked')
+                link.click()
+            elif (game_type == 'Ranked Flex'): 
+                link = nav.find_element_by_id('right_gametype_flexranked')
+                link.click()
+        
+        WebDriverWait(self.source, 10).until(
+            EC.presence_of_element_located((
+            By.CLASS_NAME, "GameAverageStats")))
 
+        # get loaded game stats container
         gameavg_container = self.source.find_element_by_class_name("GameAverageStats")
 
         # win loss ratio data
@@ -81,7 +95,7 @@ class profile:
                     'lose': champion_lose
                 }
             }
-            
+
         return {
             'type': game_type, 
             'win': win,
