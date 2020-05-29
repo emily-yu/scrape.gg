@@ -112,17 +112,30 @@ class profile:
         }
 
     def recently_played_with(self):
-        return {
-            '1': {
-                'username': 'ithrowname',
-                'played': 8,
-                'wins': 4,
-                'loss': 4,
-                'winratio': 0.5
-            },
-            '2': None,
-            '3': None
-        }
+        res = {}
+        rank = 1
+        summoner_table = self.source.find_element_by_class_name("SummonersMostGameTable").find_element_by_class_name("Body")
+        for summoner in summoner_table.find_elements_by_class_name("Row"):
+            name = class_content_search(summoner, ["SummonerName", "Link"], 'innerHTML')
+            row_container = summoner.find_element_by_xpath("..")
+            game_count = class_content(row_container, "GameCount")
+            win = class_content(row_container, "Win")
+            lose = class_content(row_container, "Lose")
+            win_ratio = class_content(row_container, "WinRatio")
+            res[str(rank)] = {
+                'username': name,
+                'played': game_count,
+                'win': remove_spaces(win),
+                'lose': remove_spaces(lose),
+                'ratio': remove_spaces(win_ratio)
+            }
+            rank += 1
+        
+        if len(res) > 0:
+            return res
+        else:
+            return None
+
     # -------dont bother until finish everything else-----
     def all_champions(self):
         # https://na.op.gg/summoner/champions/userName=API
@@ -143,3 +156,6 @@ def class_content_search(parent, classList, attribute=None):
 def class_content(parent, className):
     first_element = parent.find_elements_by_class_name(className)[0]
     return first_element.get_attribute('innerHTML')
+
+def remove_spaces(inp):
+    return "".join(inp.split())

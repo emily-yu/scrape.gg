@@ -11,7 +11,7 @@ from match_detail import match
 import json # for testing
 
 driver = 0
-summonerName = 'mental+booom'
+summonerName = 'CHIKAlNAl'
 queryMode = 'Total' # 'Ranked Solo', 'Ranked Flex'/'Ranked Flex 5v5'
 summonerData = {}
 
@@ -76,6 +76,7 @@ driver = initDriver()
 # print(json.dumps(test.build(), indent=2))
 
 test = profile(driver)
-print(json.dumps(test.queue_stats('Ranked Flex'), indent=2))
+# print(json.dumps(test.queue_stats('Ranked Flex'), indent=2))
+print(json.dumps(test.recently_played_with(), indent=2))
 
 driver.quit()
