@@ -63,7 +63,7 @@ def showMoreMatches():
 def getMatchDetail():
     curr = driver.find_elements_by_class_name("GameItemWrap")[0]
     return match(curr, summonerName)
-    
+
 driver = initDriver()
 # print(driver.page_source)
 # refreshFullProfile()
@@ -80,3 +80,5 @@ test = profile(driver)
 print(json.dumps(test.recently_played_with(), indent=2))
 
 driver.quit()
+
+
