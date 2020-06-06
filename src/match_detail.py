@@ -87,6 +87,17 @@ class match:
         # player names
         teams = self.game_player_names(is_win)
 
+        # for anything requiring more than a basic strip
+        def format_output(inp_type, inp):
+            if (inp_type == 'pkill'):
+                inp = inp.strip()
+                inp = inp.replace('P/Kill ', '')
+                inp = float(inp.strip('%'))/100 # as decimal
+            elif (inp_type == 'level'):
+                inp = inp.strip()
+                inp = inp.replace('Level', '')
+            return inp
+
         return {
             'win': is_win,
             'queue_type': queue_type.strip(),
@@ -98,11 +109,11 @@ class match:
                 'loser': teams['loser']
             },
             'gameplay': {
-                'level': level.strip(),
+                'level': format_output('level', level),
                 'cs' : cs_raw.strip(),
                 'cs_per_min': cs_per_min,
-                'pkill' : pkill.strip(),
-                'build': [],
+                'pkill' : format_output('pkill', pkill),
+                'build': [], # todo
                 'kda': {
                     'overall': kda_ratio,
                     'kill': kill_count,
@@ -166,6 +177,9 @@ class match:
         death = class_content_search(parent, ["KDA", "Assist"], 'innerHTML')
         
         pkill = class_content_search(parent, ["KDA", "CKRate"], 'innerHTML')
+        pkill = pkill.replace('(', '') # hacky as heck lmao
+        pkill = pkill.replace('%)', '')
+        pkill = float(pkill)/100 # as decimal
 
         damage = class_content_search(parent, ["Damage", "ChampionDamage"], 'innerHTML')
 
@@ -184,7 +198,7 @@ class match:
 
         return {
             'username': username,
-            'win': is_victory,
+            'win': remove_spaces(is_victory) == 'Victory',
             'player': {
                 'elo': remove_spaces(elo),
                 'champion_played': champion_played,
@@ -203,7 +217,7 @@ class match:
                     'death': death,
                     'assist': assist
                 },
-                'damage': damage,
+                'damage': damage.replace(',', ''),
                 'wards': {
                     'control': control,
                     'total': placed,
@@ -281,7 +295,7 @@ class match:
             'players': players,
             'player_stats': {
                 'team': team,
-                'result': result.text
+                'victory': result.text == "Victory"
             },
             'blue': blue,
             'red': red
