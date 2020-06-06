@@ -26,8 +26,17 @@ recent = init.getMatch(1)
 
 
 # profile details class
-# profile = init.getProfile() # stable
+profile = init.getProfile() # stable
+# print(json.dumps(profile.recently_played_with(), indent=2))
 # print(profile.recently_played_with()) # stable
+
+# print(json.dumps(profile.queue_stats('Total'), indent=2))
 # print(profile.queue_stats('Total')) # stable
+
+# print(json.dumps(profile.top_played_champions(), indent=2))
 # print(profile.top_played_champions()) # not really implemented but ok
+
+print(json.dumps(profile.rank('Ranked Solo'), indent=2))
 # print(profile.rank('Ranked Solo')) # not really implemented but ok
+
+init.driver.quit()

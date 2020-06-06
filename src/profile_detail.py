@@ -65,7 +65,10 @@ class profile:
         assist = class_content_search(kda, ["KDA", "Assist"], 'innerHTML')
         death = class_content_search(kda, ["KDA", "Death"], 'innerHTML')
         kdaratio = class_content_search(kda, ["KDARatio", "KDARatio"], 'innerHTML')
+        
         pkill = class_content_search(kda, ["KDARatio", "CKRate"], 'innerHTML')
+        pkill = pkill.replace('(<span>', '').replace('%</span>)', '')
+        pkill = float(pkill) / 100
 
         # positioning preference data
         preferred = []
@@ -74,9 +77,11 @@ class profile:
             role = class_content(position, "Name")
             rolerate = class_content_search(position, ["RoleRate"]).find_elements_by_tag_name('b')[0].get_attribute("innerHTML")
             winrate = class_content_search(position, ["WinRatio"]).find_elements_by_tag_name('b')[0].get_attribute("innerHTML")
-
+            
             # validity check
             if (rolerate.isnumeric() and winrate.isnumeric()):
+                winrate = float(winrate) / 100 # format
+                rolerate = float(rolerate) / 100
                 preferred.append({ 'role': role, 'rolerate': rolerate, 'winrate': winrate })
 
         # champion preferencing data
@@ -85,7 +90,10 @@ class profile:
         for position in champion_prefer.find_elements_by_class_name("Content"):
             champion_name = class_content(position, "Name")
             winratio_wrapper  = class_content_search(position, ["WonLose"])
+            
             champion_ratio = class_content(winratio_wrapper, "tip")
+            champion_ratio = float(champion_ratio.replace('%', '')) / 100
+            
             champion_win = class_content(winratio_wrapper, "win")
             champion_lose = class_content(winratio_wrapper, "lose")
             champion_kda = class_content_search(position, ["KDA"]).find_element_by_tag_name("span").get_attribute("innerHTML")
@@ -123,13 +131,18 @@ class profile:
             game_count = class_content(row_container, "GameCount")
             win = class_content(row_container, "Win")
             lose = class_content(row_container, "Lose")
+
             win_ratio = class_content(row_container, "WinRatio")
+            win_ratio = remove_spaces(win_ratio)
+            win_ratio = win_ratio.replace('%', '')
+            win_ratio = float(win_ratio) / 100
+
             res[str(rank)] = {
                 'username': name,
                 'played': game_count,
                 'win': remove_spaces(win),
                 'lose': remove_spaces(lose),
-                'ratio': remove_spaces(win_ratio)
+                'ratio': win_ratio
             }
             rank += 1
         
