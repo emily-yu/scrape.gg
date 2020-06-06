@@ -1,0 +1,15 @@
+Metadata-Version: 1.2
+Name: scrape.gg
+Version: 1.0.0
+Summary: league of legends data from op.gg
+Home-page: https://github.com/emily-yu/scrape.gg
+Author: Emily Yu
+Author-email: eyudeveloper@gmail.com
+License: MIT
+Description: UNKNOWN
+Keywords: league development selenium webscraper
+Platform: UNKNOWN
+Classifier: Programming Language :: Python :: 3
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Requires-Python: >=3
