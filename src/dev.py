@@ -17,7 +17,7 @@ summonerData = {}
 
 def initDriver():
     # get initial html
-    driverpath = os.path.realpath(r'drivers/chromedriver')
+    driverpath = os.path.realpath(r'../drivers/chromedriver')
     chrome_options = Options()  
     # chrome_options.add_argument("--headless")  
 
@@ -60,11 +60,22 @@ def showMoreMatches():
     # verify that [2] has changed
     print('driver update successful: ', len(a) < len(driver.find_elements_by_class_name("GameItemWrap")))
 
-def getMatchDetail():
-    curr = driver.find_elements_by_class_name("GameItemWrap")[0]
-    return match(curr, summonerName)
+def getMatchSequence(count):
+    # curr = driver.find_elements_by_class_name("GameItemWrap")[0]
+    expansions = 0
+    while (count > 10):
+        showMoreMatches()
+        print('click expansion', count)
+        count -= 10
+        expansions += 1
+    res = []
+    for match in driver.find_elements_by_class_name("GameItemWrap"):
+        res.append(match)
+        if len(res) == count + (10 * expansions):
+            return res
 
 driver = initDriver()
+print(getMatchSequence(12))
 # print(driver.page_source)
 # refreshFullProfile()
 # showMoreMatches()
@@ -75,9 +86,9 @@ driver = initDriver()
 # print(json.dumps(test.overview(), indent=2))
 # print(json.dumps(test.build(), indent=2))
 
-test = profile(driver)
+# test = profile(driver)
 # print(json.dumps(test.queue_stats('Ranked Flex'), indent=2))
-print(json.dumps(test.recently_played_with(), indent=2))
+# print(json.dumps(test.recently_played_with(), indent=2))
 
 driver.quit()
 
