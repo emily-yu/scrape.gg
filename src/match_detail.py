@@ -3,6 +3,8 @@ import re
 import os
 
 from selenium.common.exceptions import NoSuchElementException
+from selenium.common.exceptions import TimeoutException
+from selenium.common.exceptions import ElementClickInterceptedException
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
@@ -112,17 +114,34 @@ class match:
         }
 
     def click_expansion(self, to_click, wait_until_exists):
+        def check_exists():
+            try:
+                self.match.find_elements_by_class_name(wait_until_exists)[0]
+                return True
+            except: 
+                return False
+
+        if check_exists(): # don't expand if already exists
+            return self.match.find_elements_by_class_name(wait_until_exists)[0]             
+
         # click expand button
         link = self.match.find_element_by_id(to_click)
         link.click()
-
+            
         # wait until detaillayout is expanded
-        WebDriverWait(self.match, 10).until(
-            EC.presence_of_element_located((
-            By.CLASS_NAME, wait_until_exists)))
+        try:
+            WebDriverWait(self.match, 20).until(
+                EC.presence_of_element_located((
+                By.CLASS_NAME, wait_until_exists)))
 
-        # extraction logic
-        return self.match.find_elements_by_class_name(wait_until_exists)[0]
+            # extraction logic
+            return self.match.find_elements_by_class_name(wait_until_exists)[0]
+        except TimeoutException as ex:
+            print("TimeoutException has been thrown. Verify parameters." + str(ex))
+            return None
+        except ElementClickInterceptedException as ex:
+            print("WebDriver behavior error has occured. Please try again." + str(ex))
+            return None
 
     def player_stats(self, username):
         matchdetail = self.click_expansion('right_match', "MatchDetailLayout")

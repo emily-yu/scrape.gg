@@ -69,8 +69,8 @@ def getMatchSequence(count):
         count -= 10
         expansions += 1
     res = []
-    for match in driver.find_elements_by_class_name("GameItemWrap"):
-        res.append(match)
+    for match_iter in driver.find_elements_by_class_name("GameItemWrap"):
+        res.append(match(match_iter))
         if len(res) == count + (10 * expansions):
             return res
 

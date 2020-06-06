@@ -1,3 +1,5 @@
+import re
+
 # extract first element content (by class)
 def class_content(parent, className):
     first_element = parent.find_elements_by_class_name(className)[0]
