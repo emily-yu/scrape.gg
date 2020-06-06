@@ -1,0 +1,10 @@
+README.rst
+setup.cfg
+setup.py
+src/scrapeGG.py
+src/scrapegg.py
+src/scrape.gg.egg-info/PKG-INFO
+src/scrape.gg.egg-info/SOURCES.txt
+src/scrape.gg.egg-info/dependency_links.txt
+src/scrape.gg.egg-info/not-zip-safe
+src/scrape.gg.egg-info/top_level.txt

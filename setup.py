@@ -32,12 +32,10 @@ setuptools.setup(
 
     keywords = 'league development selenium webscraper',
 
-    packages = find_packages('src'),
+    packages = setuptools.find_packages('src'),
     package_dir = {'': 'src'},
     python_requires = '>=3',
-    py_modules = ["scrape.gg"],
+    py_modules = ["scrapeGG"],
     include_package_data = True,
     zip_safe = False,
-
-    install_requires=['requests', 'google'],
 )

@@ -39,4 +39,4 @@ profile = init.getProfile() # stable
 print(json.dumps(profile.rank('Ranked Solo'), indent=2))
 # print(profile.rank('Ranked Solo')) # not really implemented but ok
 
-init.driver.quit()
+init.quit()
