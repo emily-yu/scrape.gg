@@ -1,6 +1,6 @@
 Metadata-Version: 1.2
-Name: scrape.gg
-Version: 0.0.1
+Name: scrapeGG
+Version: 0.0.4
 Summary: Pulling League of Legends profile and match data from op.gg website.
 Home-page: https://github.com/emily-yu/scrape.gg
 Author: Emily Yu

@@ -16,6 +16,16 @@ Note: scrapes using English, only tested on NA server at the moment.
 
 ### Installation
 
-[todo]
+	pip install scrape.gg==1.0.0
+
+or
+
+    git clone https://github.com/emily-yu/animelyrics.git
+    cd animelyrics
+    python setup.py
 
 ### Usage
+
+
+### changelog
+1.0.0 - first release on PyPI

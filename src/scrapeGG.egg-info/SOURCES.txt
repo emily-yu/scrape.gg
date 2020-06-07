@@ -1,0 +1,13 @@
+MANIFEST.in
+README.rst
+setup.cfg
+setup.py
+src/match_detail.py
+src/profile_detail.py
+src/scrapeGG.py
+src/utility.py
+src/scrapeGG.egg-info/PKG-INFO
+src/scrapeGG.egg-info/SOURCES.txt
+src/scrapeGG.egg-info/dependency_links.txt
+src/scrapeGG.egg-info/not-zip-safe
+src/scrapeGG.egg-info/top_level.txt

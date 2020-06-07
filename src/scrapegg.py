@@ -4,11 +4,12 @@ from selenium.webdriver.chrome.options import Options
 from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver import ActionChains
+from webdriver_manager.chrome import ChromeDriverManager
 
 from profile_detail import profile
 from match_detail import match
 
-class scrapegg:
+class scrapeGG:
     def __init__(self, summonerName):
         self.driver = self.initDriver(summonerName) # source if want to write custom functions
         self.summonerName = summonerName
@@ -16,11 +17,12 @@ class scrapegg:
     # import from init file
     def initDriver(self, summonerName):
         # get initial html
-        driverpath = os.path.realpath(r'../drivers/chromedriver')
+        # driverpath = os.path.realpath(r'drivers/chromedriver')
+        driverpath = '/usr/local/bin/chromedriver'
         chrome_options = Options()  
-        # chrome_options.add_argument("--headless")  
-
-        driver = webdriver.Chrome(driverpath, options=chrome_options)
+        chrome_options.add_argument("--headless")  
+        driver = webdriver.Chrome(ChromeDriverManager().install(), options=chrome_options)
+        # driver = webdriver.Chrome(driverpath, options=chrome_options)
         driver.get('https://na.op.gg/summoner/userName=' + summonerName)
 
         return driver

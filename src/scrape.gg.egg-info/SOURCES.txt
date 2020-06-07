@@ -1,8 +1,11 @@
 README.rst
 setup.cfg
 setup.py
+src/match_detail.py
+src/profile_detail.py
 src/scrapeGG.py
 src/scrapegg.py
+src/utility.py
 src/scrape.gg.egg-info/PKG-INFO
 src/scrape.gg.egg-info/SOURCES.txt
 src/scrape.gg.egg-info/dependency_links.txt

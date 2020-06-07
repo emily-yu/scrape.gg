@@ -1,7 +1,7 @@
-from scrapegg import scrape
-import json # for testing
+from scrapeGG import scrapeGG
+init = scrapeGG('API')
 
-init = scrape('API') # driver
+import json # for testing
 
 # test match api class
 recent = init.getMatch(1)
