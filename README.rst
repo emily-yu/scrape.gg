@@ -22,7 +22,7 @@ Installation
 
 ::
 
-    pip install scrape.gg==1.0.0
+    pip install scrapeGG==0.0.4
 
 or
 

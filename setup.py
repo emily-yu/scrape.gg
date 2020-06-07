@@ -20,7 +20,7 @@ with open(path.join(here, 'README.rst'), encoding='utf-8') as f:
 setuptools.setup(
     # details
     name='scrapeGG',
-    version='0.0.4',
+    version='0.0.5',
     description='Pulling League of Legends profile and match data from op.gg website.',
     long_description=long_description,
     url='https://github.com/emily-yu/scrape.gg',

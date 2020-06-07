@@ -16,12 +16,12 @@ Note: scrapes using English, only tested on NA server at the moment.
 
 ### Installation
 
-	pip install scrape.gg==1.0.0
+	pip install scrapeGG==0.0.5
 
 or
 
-    git clone https://github.com/emily-yu/animelyrics.git
-    cd animelyrics
+    https://github.com/emily-yu/scrape.gg.git
+    cd scrape.gg
     python setup.py
 
 ### Usage
@@ -79,4 +79,5 @@ ranksolo_rank = profile.rank('Ranked Solo')
 ```
 
 ### changelog
-0.0.2 - first release on PyPI
+0.0.4 - first release on PyPI
+0.0.5 - correction to installation instructions
