@@ -1,7 +1,6 @@
 # generate dist
 # python3 setup.py sdist bdist_wheel
-
-# python -m twine  upload dist/*
+# python3 -m twine  upload dist/*
 
 # testing commands
 # python3 -m twine upload --repository-url https://test.pypi.org/legacy/ dist/*
